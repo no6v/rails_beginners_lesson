@@ -106,7 +106,7 @@ $ rake -T                       #rakeで実行できるタスクの一覧
 
 ### <span class="icon-leaf"></span> Rails内の役割分担
 
-![Rails Structure](/img/rails_structure.png "Rails Structure")
+![Rails Structure]({{site.baseurl}}/img/rails_structure.png "Rails Structure")
 
 赤い部分
 : 普段実装する場所
@@ -118,7 +118,7 @@ $ rake -T                       #rakeで実行できるタスクの一覧
 
 ### <span class="icon-leaf"></span> Railsのディレクトリ構成
 
-![Rails Folders](/img/rails_folders.png "Rails Folders")
+![Rails Folders]({{site.baseurl}}/img/rails_folders.png "Rails Folders")
 
 赤い部分
 : 普段実装する場所
