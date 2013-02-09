@@ -1,0 +1,152 @@
+---
+layout: default
+title: 初心者レッスン　lesson1
+permalink: lesson1
+---
+
+# Lesson1
+
+---
+
+### <span class="icon-leaf"></span> Railsで何をする？
+
+Webアプリを作ります
+
+例：ブログ、ホームページ、ECサイト、業務アプリ  
+
+有名なRails製サイト
+
+クックパッド　http://cookpad.com/
+
+---
+
+### <span class="icon-leaf"></span> どうしてRails?
+
+コマンドを実行するだけで、
+
+* データベースとの連携が意識せずできる
+* データの一覧、詳細がブラウザにすぐ表示できる
+* データの新規登録、編集などの画面・ボタンが用意される
+
+（JavaとかPHPに比べたら）簡単！
+
+---
+
+### <span class="icon-leaf"></span > 作ってみよう・準備
+
+* 何を作る？
+
+  ブログ・ホームページ・ECサイト・業務アプリ・何か便利ツール・・・
+
+* プロジェクトの名前を考える
+
+  アプリの通称ではなく、プログラミングをするための（それを呼びたくなる）名前
+
+* データベースのテーブル構成
+
+  1. アプリで保存しなければならないデータをすべて洗い出す
+  2. 同じカテゴリーのデータをまとめる
+  3. 使い回す同じデータは別のカテゴリーにまとめる
+  4. カテゴリー、データにアルファベットで名前をつけて、データの種類を決める
+
+    `キーワード : データベース、テーブル、正規化、データ型`
+
+* 画面遷移
+
+  1. アプリに必要な画面を書き出す
+  2. どんな順番で表示するかを考える
+
+---
+
+### <span class="icon-leaf icon-sccess"></span> プロジェクトとデータベース
+
+* アプリのプロジェクトを作る
+
+{% highlight sh %}
+$ rails new プロジェクト名
+{% endhighlight %}
+
+* テーブルの元ネタを作る
+
+{% highlight sh %}
+$ rails generate scaffold テーブル名 カラム:データ型
+{% endhighlight %}
+
+`データ型：string, text, integer, date, time, datetime, boolean`
+
+* テーブル作成
+
+{% highlight sh %}
+$ rake db:migrate
+{% endhighlight %}
+
+* テーブルの確認（DBを含めたirbのようなもの）
+
+{% highlight sh %}
+$ rails console
+>> User
+{% endhighlight %}
+
+* Railsを起動（終了するときはCtrl+C）
+
+{% highlight sh %}
+$ rails server
+{% endhighlight %}
+
+* 便利コマンドいろいろ
+
+{% highlight sh %}
+$ rails -h                      #railsコマンドのヘルプ
+$ rails generate -h             #rails generateコマンドのヘルプ
+$ rails generate scaffold -h    #rails generate scaffoldコマンドのヘルプ
+$ rake -T                       #rakeで実行できるタスクの一覧
+{% endhighlight %}
+
+---
+
+### <span class="icon-leaf"></span> Rails内の役割分担
+
+![Rails Structure](/img/rails_structure.png "Rails Structure")
+
+赤い部分
+: 普段実装する場所
+
+白い点線
+: いわゆるRailsと言われる範囲
+
+---
+
+### <span class="icon-leaf"></span> Railsのディレクトリ構成
+
+![Rails Folders](/img/rails_folders.png "Rails Folders")
+
+赤い部分
+: 普段実装する場所
+
+---
+
+### <span class="icon-leaf"></span> URLのはなし
+
+* URLの確認
+
+{% highlight sh %}
+$ rake routes
+{% endhighlight %}
+
+* URLの基本構成
+
+scaffoldをすると勝ってに作ってくれるURL
+
+| URL                                |action|
+|:-----------------------------------|:----:|
+|http://example.com/resources        | <span class="text-error">index</span>  |
+|http://example.com/resources/new    | <span class="text-error">new</span>    |
+|http://example.com/resources        | <span class="text-error">create</span> |
+|http://example.com/resources/id     | <span class="text-error">show</span>   |
+|http://example.com/resources/id/edit| <span class="text-error">edit</span>   |
+|http://example.com/resources/id     | <span class="text-error">update</span> |
+|http://example.com/resources/id     | <span class="text-error">delete</span> |
+
+---
+
+#### Lesson1はここまでです。おつかれさまでした <span class="icon-music"></span>
