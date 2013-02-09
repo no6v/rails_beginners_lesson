@@ -10,3 +10,6 @@ pygments:    true
 server_port: 4000
 markdown:    kramdown
 permalink:   pretty
+
+url:      http://minamirb.github.com/rails_beginners_lesson/
+baseurl: /rails_beginners_lesson/
