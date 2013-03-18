@@ -15,15 +15,24 @@
 <body>
   <div class="navbar navbar-fluid-top">
     <div class="navbar-inner">
-      <a class="brand" href="/">Minami.rb</a>
+      <a class="brand" href="{{site.baseurl}}">Minami.rb</a>
       <ul class="nav">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            レッスン内容
+            レッスン for Rails3.2
             <b class="caret"></b>
           </a>
           <ul class="dropdown-menu">
-            {% include lessons.html %}
+            {% include lessons_rails3.html %}
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            いろいろ情報
+            <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+            {% include information.html %}
           </ul>
         </li>
         <li class="dropdown">
