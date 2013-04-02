@@ -4,9 +4,9 @@ title: upgrading form 3.2 to 4.0
 permalink: upgrading-from3.2-to4.0
 ---
 
-## Rails3.2からRails4.0へのアップグレード
+## Rails 3.2 から Rails 4.0へのアップグレード
 
-このページは、Rails Guidesの"A Guide for Upgrading Ruby on Rails"の一部を翻訳したものです。
+このページは、Rails Guides の "A Guide for Upgrading Ruby on Rails" の一部を翻訳したものです。
 
 翻訳ミス等もあると思いますので、英語の元サイトも参考にしながらご利用ください。
 
@@ -16,9 +16,9 @@ permalink: upgrading-from3.2-to4.0
 
 `この内容はまだ改訂の可能性があります。`
 
-もしアプリケーションがRails3.2.xより古いバージョンであれば、Rails4.0にする前にRails3.2にアップグレードすることをオススメします。
+もしアプリケーションが Rails 3.2.x より古いバージョンであれば、Rails 4.0 にする前に Rails 3.2 にアップグレードすることをオススメします。
 
-次の変更点は、アプリケーションをRails4.0にアップグレードするためのものです。
+次の変更点は、アプリケーションを Rails 4.0 にアップグレードするためのものです。
 
 >
 
@@ -30,26 +30,28 @@ Rails 4.0 では、Gemfile の assets グループはなくなりました。ア
 
 ### 2.2 vendor/plugins
 
-Rails4.0は、もうvendor/pluginsからロードするプラグインのサポートをしません。プラグインをgemに置き換え、Gemfileに追加しなければならないのです。もし、gemにしないのなら、例えば、lib/my_plugin/*に移し、適当な初期値をconfig/initializers/my_plugin.rbに追加することもできます。
+Rails 4.0 は、もう vendor/plugins からロードするプラグインのサポートをしません。プラグインを gem に置き換え、Gemfile に追加しなければならないのです。もし、gem にしないのなら、例えば、lib/my_plugin/* に移し、適当な初期値を config/initializers/my_plugin.rb に追加することもできます。
 
 >
 
 ### 2.3 Active Record
 
-* Rails4.0では、[いくつかの関連づけの矛盾](https://github.com/rails/rails/commit/302c912bf6bcd0fa200d964ec2dc4a44abe328a6)のために、Active Recordから"identity map"を削除しました。もし、手入力で"identity map"を有効にしたかったら、次のconfigを削除すればアプリケーションへの影響がなくなります。
+* Rails 4.0 では、[いくつかの関連づけの矛盾](https://github.com/rails/rails/commit/302c912bf6bcd0fa200d964ec2dc4a44abe328a6)のために、Active Record から "identity map" を削除しました。もし、手入力で "identity map" を有効にしたかったら、次の config を削除すればアプリケーションへの影響がなくなります。
+
 {% highlight ruby %}
 config.active_record.identity_map
 {% endhighlight %}
 
-* 関連付けされた集合内におけるdeleteメソッドは、レコードのidとしてFixnumかStringで受け取ることができ、それらレコードに加え、destroyメソッドがすることは大抵することができます。以前は、ActiveRecord::AssociationTypeMismatchがその引数(?arguments)を担っていましたが、Rails4.0からは、自動的なdeleteが削除を実行する前に、マッチしたレコードのidを探そうとします。
+* 関連付けされた集合内における delete メソッドは、レコードの id として Fixnum か String で受け取ることができ、それらレコードに加え、destroy メソッドがすることは大抵することができます。以前は、ActiveRecord::AssociationTypeMismatch がその引数(?arguments)を担っていましたが、Rails4.0 からは、自動的な delete が削除を実行する前に、マッチしたレコードの id を探そうとします。
 
-* Rails4.0は、ActiveRecord::Relationに命令を溜め込むような変更をしました。以前のバージョンでは、新しい命令は、その前の命令が明確化された後に適応されていました。しかし、これでは通用しません。詳しくは、[Active Record Query guide](http://edgeguides.rubyonrails.org/active_record_querying.html#ordering)を参照ください。
+* Rails4.0 は、ActiveRecord::Relation に命令を溜め込むような変更をしました。以前のバージョンでは、新しい命令は、その前の命令が明確化された後に適応されていました。しかし、これでは通用しません。詳しくは、[Active Record Query guide](http://edgeguides.rubyonrails.org/active_record_querying.html#ordering) を参照ください。
 
-* Rails4.0は、serialized_attributesとattr_readonlyをクラスメソッドに限定する変更をしました。インスタンスメソッドは廃止する予定ですので使わずにクラスメソッドに変更してください。例：self.serialized_attributes -> self.class.serialized_attributes
+* Rails4.0 は、serialized_attributes と attr_readonly をクラスメソッドに限定する変更をしました。インスタンスメソッドは廃止する予定ですので使わずにクラスメソッドに変更してください。例：self.serialized_attributes -> self.class.serialized_attributes
 
-* Rails4.0は、Strong Parametersを利用する特徴として、attr_accessibleとattr_protectedを削除しました。スムーズなアップグレードの道筋として、[Protected Attributes gem](https://github.com/rails/protected_attributes)を使うといいでしょう。
+* Rails4.0 は、Strong Parameters を利用する特徴として、attr_accessible と attr_protected を削除しました。スムーズなアップグレードの道筋として、[Protected Attributes gem](https://github.com/rails/protected_attributes) を使うといいでしょう。
 
-* Rails4.0は、scopeをProcやlambdaのような呼び出し可能なオプジェクトにすることをお勧めします。
+* Rails4.0 は、scope を Proc や lambda のような呼び出し可能なオプジェクトにすることをお勧めします。
+
 {% highlight ruby %}
 scope :active, where(active: true)
 
@@ -57,23 +59,23 @@ scope :active, where(active: true)
 scope :active, -> { where active: true }
 {% endhighlight %}
 
-* Rails4.0は、ActiveRecord::FixtureSetを利用して、ActiveRecord::Fixturesを廃止予定です。
+* Rails4.0 は、ActiveRecord::FixtureSet を利用して、ActiveRecord::Fixtures を廃止予定です。
 
-* Rails4.0は、ActiveSupport::TestCaseを利用して、ActiveRecord::TestCaseを廃止予定です。
+* Rails4.0 は、ActiveSupport::TestCase を利用して、ActiveRecord::TestCase を廃止予定です。
 
 >
 
 ### 2.4 Active Resource
 
-Rails4.0は、Active Resourceをgemに置き換えました。その機能が必要であれば、Gemfileに[Active Resource gem](https://github.com/rails/activeresource)を置けば大丈夫です。
+Rails4.0 は、Active Resource を gem に置き換えました。その機能が必要であれば、Gemfile に[Active Resource gem](https://github.com/rails/activeresource) を置けば大丈夫です。
 
 >
 
 ### 2.5 Active Model
 
-* Rails4.0は、エラーとActiveModel::Validations::ConfirmationValidatorとの連携方法を変更しました。confirmation validationsがコケたとき、エラーはattributeの代わりに:#{attribute}_confirmationと連携されます。
+* Rails4.0 は、エラーと ActiveModel::Validations::ConfirmationValidator との連携方法を変更しました。confirmation validations がコケたとき、エラーは attribute の代わりに:#{attribute}_confirmation と連携されます。
 
-* Rails4.0は、ActiveModel::Serializers::JSON.include_root_in_jsonの初期値をfalseに変更しました。Active Model SerializersとActive Record objectsは、同じデフォルトの挙動になります。これで、 config/initializers/wrap_parameters.rbファイルの次のオプションを、コメントアウトしたり削除したりすることができます。
+* Rails4.0 は、ActiveModel::Serializers::JSON.include_root_in_json の初期値を false に変更しました。Active Model Serializers と Active Record objects は、同じデフォルトの挙動になります。これで、config/initializers/wrap_parameters.rb ファイルの次のオプションを、コメントアウトしたり削除したりすることができます。
 
 {% highlight ruby %}
 # Disable root element in JSON by default.
