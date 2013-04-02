@@ -207,5 +207,34 @@ Also check your environment settings for config.action_dispatch.best_standards_s
 
 * Rails 4.0 では、ActionController::Routing は非推奨になりました。ActionDispatch::Routing を使ってください。
 
+>
+
+### 2.7 Active Support
+
+Rails 4.0 では、ERB::Util#json_escape に対するエイリアス j が削除されました。j は ActionView::Helpers::JavaScriptHelper#escape_javascript のために使われているからです。
+
+>
+
+### 2.8 ヘルパーのロード順
+
+Rails 4.0 では、二つ以上のディレクトリからロードされるヘルパーのロード順が変更されました。以前は、これらは一つにまとめられて、アルファベット順に並べ替えられていました。Rails 4.0 にアップデートすると、ロードされたディレクトリの順序が保持され、各ディレクトリの中でのみアルファベット順に並べ替えられます。helpers_path パラメータを明示的に使用しない限り、この変更はエンジンからヘルパーをロードする方法にのみ影響します。もし、順序に依存しているなら、アップグレード後に正しいメソッドが利用できるかチェックしてください。エンジンがロードされる順序を変更したい場合は、config.railties_order= メソッドが使えます。
+
+>
+
+### 2.9 Active Record Observer と Action Controller Sweeper
+
+Active Record Observer と Action Controller Sweeper は、rails-observers gem に置き換えられました。これらの機能が必要なら、rails-observers gem を追加する必要があります。
+
+>
+
+### 2.10 sprockets-rails
+
+* assets:precompile:primary は削除されました。代わりに、assets:precompile を使ってください。
+
+>
+
+### 2.11 sass-rails
+
+* 引数 2 個の asset_url は非推奨になりました。例えば、asset-url("rails.png", image) は asset-url("rails.png") になります。
 
 ---
