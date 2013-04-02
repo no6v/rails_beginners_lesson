@@ -96,13 +96,116 @@ Myapp::Application.config.secret_key_base = 'new secret key base'
 
 ユーザベースが完全に Rails 4.x に移行できて、Rails 3.x に巻き戻さなくてもよいと確信できるまでは、secret_key_base を設定しないように注意してください。これは、Rails 4.x の secret_key_base で署名されたクッキーが、Rails 3.x のものと後方互換性がないためです。他の部分のアップグレードが確実に完了するまでは、所定の位置にある既存の secret_token はそのままにして、新たな secret_key_base は設定せず、廃止警告を無視しておいて構いません。
 
-Rails 4.0 introduces a new UpgradeSignatureToEncryptionCookieStore
-cookie store. This is useful for upgrading apps using the old default
-CookieStore to the new default EncryptedCookieStore which leverages
-the new ActiveSupport::KeyGenerator. To use this transitional cookie
-store, you'll want to leave your existing secret_token in place, add a
-new secret_key_base, and change your session_store like so:
+* Rails 4.0 では、新たに UpgradeSignatureToEncryptionCookieStore クッキーストアが導入されました。これは、以前のデフォルトの CookieStore を使っているアプリを、新しい ActiveSupport::KeyGenerator を利用する新たなデフォルトの EncryptedCookieStore にアップグレードするのに役立ちます。この、暫定的なクッキーストアを利用するには、所定の位置にある secret_token はそのままにして、新しい secret_key_base を追加して、session_store を以下のように変更するとよいです。
 
-* Rails 4.0 では、新たに UpgradeSignatureToEncryptionCookieStore クッキーストアが導入されました。これは、以前のデフォルトの CookieStore を使っているアプリを、新しい ActiveSupport::KeyGenerator を利用する新たなデフォルトの EncryptedCookieStore にアップグレードするのに役立ちます。この、暫定的なクッキーストアを利用するには、
+{% highlight ruby %}
+# config/initializers/session_store.rb
+Myapp::Application.config.session_store :upgrade_signature_to_encryption_cookie_store, key: 'existing session key'
+ 
+# config/initializers/secret_token.rb
+Myapp::Application.config.secret_token = 'existing secret token'
+Myapp::Application.config.secret_key_base = 'new secret key base'
+{% endhighlight %}
+
+* Rails 4.0 では、ActionController::Base.asset_path オプションは削除されました。Asset Pipeline 機構を使ってください。
+
+* Rails 4.0 では、ActionController::Base.page_cache_extension オプションは非推奨になりました。代わりに ActionController::Base.default_static_extension を使ってください。
+
+* Rails 4.0 では、ActionPack から Action と Page のキャッシュが削除されました。コントローラで、caches_action を使うには actionpack-action_caching gem を、caches_pages を使うには actionpack-page_caching gem 追加する必要があります。
+
+* Rails 4.0 では、XML のパラメータパーサーが削除されました。もしこの機能が必要なら、actionpack-xml_parser を追加する必要があります。
+
+* Rails 4.0 では、memcached クライアントのデフォルトが、memcache-client から dalli に変更されました。アップグレードするには、Gemfile に gem 'dalli' の行を追加するだけです。
+
+* Rails 4.0 では、dom_id および dom_class メソッドが非推奨になりました。この機能が必要なら、コントローラで ActionView::RecordIdentifier モジュールをインクルードする必要があります。
+
+* Rails 4.0 では、assert_generates、assert_recognizes、assert_routing の挙動が変更されました。これらのアサーションは、ActionController::RoutingError ではなく、Assertion 例外をあげるようになっています。
+
+Rails 4.0 raises an ArgumentError if clashing named routes are defined. This can be triggered by explicitly defined named routes or by the resources method. Here are two examples that clash with routes named example_path
+
+* Rails 4.0 では、相反する名前付きルートが定義されたときに、ArgumentError があがるようになりました。これは、名前付きルートが明示的に定義されるか、resources メソッドで起こります。ここでは、example_path という名前のルートが相反するサンプルを二つあげています。
+
+{% highlight ruby %}
+get 'one' => 'test#example', as: :example
+get 'two' => 'test#example', as: :example
+{% endhighlight %}
+
+{% highlight ruby %}
+resources :examples
+get 'clashing/:id' => 'test#example', as: :example
+{% endhighlight %}
+
+最初の例では、複数のルートに同じ名前を使わないようにすることで簡単に回避できます。二つ目では、[Routing Guide](http://edgeguides.rubyonrails.org/routing.html#restricting-the-routes-created) に詳細があるように、resources メソッドの only もしくは except オプションを使って、ルートを制限できます。
+
+Rails 4.0 also changed the way unicode character routes are drawn. Now you can draw unicode character routes directly. If you already draw such routes, you must change them, for example
+
+* Rails 4.0 では、unicode キャラクターのルートの書き方も変わりました。unicode キャラクターのルートも直接書けるようになっています。そのようなルートを書いている場合は、それらを変更しなければなりません。例えば、
+
+{% highlight ruby %}
+get Rack::Utils.escape('こんにちは'), controller: 'welcome', action: 'index'
+{% endhighlight %}
+
+は、
+
+{% highlight ruby %}
+get 'こんにちは', controller: 'welcome', action: 'index'
+{% endhighlight %}
+
+のようになります。
+
+Rails 4.0 requires that routes using match must specify the request method. For example:
+
+* Rails 4.0 では、match を使ったルートでは、リクエストメソッドを指定する必要があります。例えば、
+
+{% highlight ruby %}
+# Rails 3.x
+match "/" => "root#index"
+ 
+# becomes
+match "/" => "root#index", via: :get
+ 
+# or
+get "/" => "root#index"
+{% endhighlight %}
+
+* Rails 4.0 has removed ActionDispatch::BestStandardsSupport middleware, <!DOCTYPE html> already triggers standards mode per http://msdn.microsoft.com/en-us/library/jj676915(v=vs.85).aspx and ChromeFrame header has been moved to config.action_dispatch.default_headers.
+
+* ↑これ、よく分からないです
+
+アプリケーションのコードから、ミドルウェアへの参照をすべて削除するのも忘れてはいけません。例えば、
+
+{% highlight ruby %}
+# 例外があがる
+config.middleware.insert_before(Rack::Lock, ActionDispatch::BestStandardsSupport)
+{% endhighlight %}
+
+Also check your environment settings for config.action_dispatch.best_standards_support and remove it if present.
+
+また、環境設定を確認して、config.action_dispatch.best_standards_support があれば削除してください。
+
+* Rails 4.0 では、プリコンパイルされた asset は vendor/assets や lib/assets から JS/CSS 以外の asset を自動ではコピーしません。Rails アプリケーションとエンジンの開発者は、これらを app/assets に置くか、config.assets.precompile を設定する必要があります。
+
+* Rails 4.0 では、アクションが要求されたフォーマットを処理できない場合に ActionController::UnknownFormat をあげます。デフォルトでは、この例外は 406 Not Acceptable を返すよう処理されますが、これは変更可能になりました。Rails 3 では常に 406 Not Acceptable が返され、変更出来ませんでした。
+
+* Rails 4.0 では、ParamsParser がリクエストパラメータのパースに失敗した場合に、ActionDispatch::ParamsParser::ParseError を継承した例外があがります。より下位の、例えば MultiJson::DecodeError の代わりに、この例外を rescue してもよいです。
+
+* Rails 4.0 では、エンジンが URL プレフィックス付きのアプリケーションにマウントされている場合でも、SCRIPT_NAME は正しくネストされます。URL プレフィックスの上書きに対処するために、default_url_options[:script_name] をセットする必要はなくなりました。
+
+* Rails 4.0 では、ActionController::Integration は非推奨になりました。ActionDispatch::Integration を使ってください。
+
+* Rails 4.0 では、ActionController::IntegrationTest は非推奨になりました。ActionDispatch::IntegrationTest を使ってください。
+
+* Rails 4.0 では、ActionController::PerformanceTest は非推奨になりました。ActionDispatch::PerformanceTest を使ってください。
+
+* Rails 4.0 では、ActionController::AbstractRequest は非推奨になりました。ActionDispatch::Request を使ってください。
+
+* Rails 4.0 では、ActionController::Request は非推奨になりました。ActionDispatch::Request を使ってください。
+
+* Rails 4.0 では、ActionController::AbstractResponse は非推奨になりました。ActionDispatch::Response を使ってください。
+
+* Rails 4.0 では、ActionController::Response は非推奨になりました。ActionDispatch::Response を使ってください。
+
+* Rails 4.0 では、ActionController::Routing は非推奨になりました。ActionDispatch::Routing を使ってください。
+
 
 ---
