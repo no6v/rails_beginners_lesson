@@ -20,15 +20,15 @@ permalink: upgrading-from3.2-to4.0
 
 次の変更点は、アプリケーションを Rails 4.0 にアップグレードするためのものです。
 
-### Gemfile
+### 2.1 Gemfile
 
 Rails 4.0 では、Gemfile の `assets` グループはなくなりました。アップグレードする時には、その行を削除する必要があります。
 
-### vendor/plugins
+### 2.2 vendor/plugins
 
 Rails 4.0 は、もう `vendor/plugins` からロードするプラグインのサポートをしません。プラグインを gem に置き換え、Gemfile に追加しなければならないのです。もし、gem にしないのなら、例えば、`lib/my_plugin/*` に移し、適当な初期値を `config/initializers/my_plugin.rb` に追加することもできます。
 
-### Active Record
+### 2.3 Active Record
 
 * Rails 4.0 では、[いくつかの関連づけの矛盾](https://github.com/rails/rails/commit/302c912bf6bcd0fa200d964ec2dc4a44abe328a6)のために、Active Record から "identity map" を削除しました。もし、手入力で "identity map" を有効にしたかったら、次の config を削除すればアプリケーションへの影響がなくなります。`config.active_record.identity_map`
 
@@ -53,11 +53,11 @@ scope :active, -> { where active: true }
 
 * Rails4.0 は、`ActiveSupport::TestCase` を利用して、`ActiveRecord::TestCase` を廃止予定です。
 
-### Active Resource
+### 2.4 Active Resource
 
 Rails 4.0 は、Active Resource を gem に置き換えました。その機能が必要であれば、Gemfile に [Active Resource gem](https://github.com/rails/activeresource) を置けば大丈夫です。
 
-### Active Model
+### 2.5 Active Model
 
 * Rails 4.0 は、エラーと `ActiveModel::Validations::ConfirmationValidator` との連携方法を変更しました。confirmation validations がコケたとき、エラーは `attribute` の代わりに `:#{attribute}_confirmation` と連携されます。
 
@@ -70,7 +70,7 @@ Rails 4.0 は、Active Resource を gem に置き換えました。その機能�
 # end
 ```
 
-### Action Pack
+### 2.6 Action Pack
 
 * Rails 4.0 では `ActiveSupport::KeyGenerator` が導入され、(特に) 署名付きクッキーの生成や検証の基盤として利用します。所定の位置にある `secret_token` をそのままにして、新たに `secret_key_base` を追加すると、Rails 3.x で生成された既存の署名付きクッキーは透過的にアップグレードされます。
 
@@ -189,23 +189,23 @@ config.middleware.insert_before(Rack::Lock, ActionDispatch::BestStandardsSupport
 
 * Rails 4.0 では、`ActionController::Routing` は非推奨になりました。`ActionDispatch::Routing` を使ってください。
 
-### Active Support
+### 2.7 Active Support
 
 Rails 4.0 では、`ERB::Util#json_escape` に対するエイリアス `j` が削除されました。`j` は `ActionView::Helpers::JavaScriptHelper#escape_javascript` のために使われているからです。
 
-### ヘルパーのロード順
+### 2.8 ヘルパーのロード順
 
 Rails 4.0 では、二つ以上のディレクトリからロードされるヘルパーのロード順が変更されました。以前は、これらは一つにまとめられて、アルファベット順に並べ替えられていました。Rails 4.0 にアップデートすると、ロードされたディレクトリの順序が保持され、各ディレクトリの中でのみアルファベット順に並べ替えられます。`helpers_path` パラメータを明示的に使用しない限り、この変更はエンジンからヘルパーをロードする方法にのみ影響します。もし、順序に依存しているなら、アップグレード後に正しいメソッドが利用できるかどうかチェックしてください。エンジンがロードされる順序を変更したい場合は、`config.railties_order=` メソッドが使えます。
 
-### Active Record Observer と Action Controller Sweeper
+### 2.9 Active Record Observer と Action Controller Sweeper
 
 Active Record Observer と Action Controller Sweeper は、`rails-observers` gem に置き換えられました。これらの機能が必要なら、`rails-observers` gem を追加する必要があります。
 
-### sprockets-rails
+### 2.10 sprockets-rails
 
 * `assets:precompile:primary` は削除されました。代わりに、`assets:precompile` を使ってください。
 
-### sass-rails
+### 2.11 sass-rails
 
 * 引数 2 個の `asset_url` は非推奨になりました。例えば、`asset-url("rails.png", image)` は `asset-url("rails.png")` になります。
 
