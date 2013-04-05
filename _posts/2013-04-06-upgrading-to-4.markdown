@@ -20,13 +20,19 @@ permalink: upgrading-from3.2-to4.0
 
 次の変更点は、アプリケーションを Rails 4.0 にアップグレードするためのものです。
 
+>
+
 ### 2.1 Gemfile
 
 Rails 4.0 では、Gemfile の `assets` グループはなくなりました。アップグレードする時には、その行を削除する必要があります。
 
+>
+
 ### 2.2 vendor/plugins
 
 Rails 4.0 は、もう `vendor/plugins` からロードするプラグインのサポートをしません。プラグインを gem に置き換え、Gemfile に追加しなければならないのです。もし、gem にしないのなら、例えば、`lib/my_plugin/*` に移し、適当な初期値を `config/initializers/my_plugin.rb` に追加することもできます。
+
+>
 
 ### 2.3 Active Record
 
@@ -42,20 +48,24 @@ Rails 4.0 は、もう `vendor/plugins` からロードするプラグインの�
 
 * Rails4.0 は、scope を Proc や lambda のような呼び出し可能なオプジェクトにすることをお勧めします。
 
-```ruby
+{% highlight ruby %}
 scope :active, where(active: true)
 
 # becomes
 scope :active, -> { where active: true }
-```
+{% endhighlight %}
 
 * Rails4.0 は、`ActiveRecord::FixtureSet` を利用して、`ActiveRecord::Fixtures` を廃止予定です。
 
 * Rails4.0 は、`ActiveSupport::TestCase` を利用して、`ActiveRecord::TestCase` を廃止予定です。
 
+>
+
 ### 2.4 Active Resource
 
 Rails 4.0 は、Active Resource を gem に置き換えました。その機能が必要であれば、Gemfile に [Active Resource gem](https://github.com/rails/activeresource) を置けば大丈夫です。
+
+>
 
 ### 2.5 Active Model
 
@@ -63,22 +73,24 @@ Rails 4.0 は、Active Resource を gem に置き換えました。その機能�
 
 * Rails 4.0 は、`ActiveModel::Serializers::JSON.include_root_in_json` の初期値を `false` に変更しました。Active Model Serializers と Active Record objects は、同じデフォルトの挙動になります。これで、`config/initializers/wrap_parameters.rb` ファイルの次のオプションを、コメントアウトしたり削除したりすることができます。
 
-```ruby
+{% highlight ruby %}
 # Disable root element in JSON by default.
 # ActiveSupport.on_load(:active_record) do
 #   self.include_root_in_json = false
 # end
-```
+{% endhighlight %}
+
+>
 
 ### 2.6 Action Pack
 
 * Rails 4.0 では `ActiveSupport::KeyGenerator` が導入され、(特に) 署名付きクッキーの生成や検証の基盤として利用します。所定の位置にある `secret_token` をそのままにして、新たに `secret_key_base` を追加すると、Rails 3.x で生成された既存の署名付きクッキーは透過的にアップグレードされます。
 
-```ruby
+{% highlight ruby %}
   # config/initializers/secret_token.rb
   Myapp::Application.config.secret_token = 'existing secret token'
   Myapp::Application.config.secret_key_base = 'new secret key base'
-```
+{% endhighlight %}
 
 ユーザベースが完全に Rails 4.x に移行できて、Rails 3.x に巻き戻さなくてもよいと確信できるまでは、`secret_key_base` を設定しないように注意してください。これは、Rails 4.x の `secret_key_base` で署名されたクッキーが、Rails 3.x のものと後方互換性がないためです。他の部分のアップグレードが確実に完了するまでは、所定の位置にある既存の `secret_token` はそのままにして、新たな `secret_key_base` は設定せず、廃止警告を無視しておいて構いません。
 
@@ -88,11 +100,11 @@ Rails 4.0 は、Active Resource を gem に置き換えました。その機能�
 
 上で述べたように、所定の位置にある `secret_token` をそのままにして、新たに `secret_key_base` を追加すると、Rails 3.x で生成された既存の署名付きクッキーは透過的にアップグレードされます。
 
-```ruby
+{% highlight ruby %}
   # config/initializers/secret_token.rb
   Myapp::Application.config.secret_token = 'existing secret token'
   Myapp::Application.config.secret_key_base = 'new secret key base'
-```
+{% endhighlight %}
 
 ここでも注意が必要です。ユーザベースが完全に Rails 4.x に移行できて、Rails 3.x に巻き戻さなくてもよいと確信できるまでは、`secret_key_base` を設定しないように注意してください。また、アップグレードする前に、外部のアプリや Javascript があなたのアプリによって生成された署名付きのクッキーをデコード出来ることに依存していないかどうかにも気をつけてください。
 
@@ -114,35 +126,35 @@ Rails 4.0 は、Active Resource を gem に置き換えました。その機能�
 
 * Rails 4.0 では、相反する名前付きルートが定義されたときに、`ArgumentError` があがるようになりました。これは、名前付きルートが明示的に定義されるか、`resources` メソッドで起こります。ここでは、`example_path` という名前のルートが相反するサンプルを二つあげています。
 
-```ruby
+{% highlight ruby %}
 get 'one' => 'test#example', as: :example
 get 'two' => 'test#example', as: :example
-```
+{% endhighlight %}
 
-```ruby
+{% highlight ruby %}
 resources :examples
 get 'clashing/:id' => 'test#example', as: :example
-```
+{% endhighlight %}
 
 最初の例では、複数のルートに同じ名前を使わないようにすることで簡単に回避できます。二つ目では、[Routing Guide](http://edgeguides.rubyonrails.org/routing.html#restricting-the-routes-created) に詳細があるように、`resources` メソッドの `only` もしくは `except` オプションを使って、ルートを制限できます。
 
 * Rails 4.0 では、unicode キャラクターのルートの書き方も変わりました。unicode キャラクターのルートも直接書けるようになっています。そのようなルートを書いている場合は、それらを変更しなければなりません。例えば、
 
-```ruby
+{% highlight ruby %}
 get Rack::Utils.escape('こんにちは'), controller: 'welcome', action: 'index'
-```
+{% endhighlight %}
 
 は、
 
-```ruby
+{% highlight ruby %}
 get 'こんにちは', controller: 'welcome', action: 'index'
-```
+{% endhighlight %}
 
 のようになります。
 
 * Rails 4.0 では、`match` を使ったルートでは、リクエストメソッドを指定する必要があります。例えば、
 
-```ruby
+{% highlight ruby %}
 # Rails 3.x
 match "/" => "root#index"
  
@@ -151,7 +163,7 @@ match "/" => "root#index", via: :get
  
 # or
 get "/" => "root#index"
-```
+{% endhighlight %}
 
 * Rails 4.0 has removed ActionDispatch::BestStandardsSupport middleware, <!DOCTYPE html> already triggers standards mode per http://msdn.microsoft.com/en-us/library/jj676915(v=vs.85).aspx and ChromeFrame header has been moved to config.action_dispatch.default_headers.
 
@@ -159,10 +171,11 @@ get "/" => "root#index"
 
 アプリケーションのコードから、ミドルウェアへの参照をすべて削除するのも忘れてはいけません。例:
 
-```ruby
+{% highlight ruby %}
 # 例外があがる
 config.middleware.insert_before(Rack::Lock, ActionDispatch::BestStandardsSupport)
-```
+{% endhighlight %}
+
 また、環境設定を確認して、`config.action_dispatch.best_standards_support` があれば削除してください。
 
 * Rails 4.0 では、asset プリコンパイルで `vendor/assets` や `lib/assets` から JS/CSS 以外の asset を自動ではコピーしません。Rails アプリケーションやエンジンの開発者は、これらを `app/assets` に置くか、`config.assets.precompile` を設定する必要があります。
@@ -189,21 +202,31 @@ config.middleware.insert_before(Rack::Lock, ActionDispatch::BestStandardsSupport
 
 * Rails 4.0 では、`ActionController::Routing` は非推奨になりました。`ActionDispatch::Routing` を使ってください。
 
+>
+
 ### 2.7 Active Support
 
 Rails 4.0 では、`ERB::Util#json_escape` に対するエイリアス `j` が削除されました。`j` は `ActionView::Helpers::JavaScriptHelper#escape_javascript` のために使われているからです。
+
+>
 
 ### 2.8 ヘルパーのロード順
 
 Rails 4.0 では、二つ以上のディレクトリからロードされるヘルパーのロード順が変更されました。以前は、これらは一つにまとめられて、アルファベット順に並べ替えられていました。Rails 4.0 にアップデートすると、ロードされたディレクトリの順序が保持され、各ディレクトリの中でのみアルファベット順に並べ替えられます。`helpers_path` パラメータを明示的に使用しない限り、この変更はエンジンからヘルパーをロードする方法にのみ影響します。もし、順序に依存しているなら、アップグレード後に正しいメソッドが利用できるかどうかチェックしてください。エンジンがロードされる順序を変更したい場合は、`config.railties_order=` メソッドが使えます。
 
+>
+
 ### 2.9 Active Record Observer と Action Controller Sweeper
 
 Active Record Observer と Action Controller Sweeper は、`rails-observers` gem に置き換えられました。これらの機能が必要なら、`rails-observers` gem を追加する必要があります。
 
+>
+
 ### 2.10 sprockets-rails
 
 * `assets:precompile:primary` は削除されました。代わりに、`assets:precompile` を使ってください。
+
+>
 
 ### 2.11 sass-rails
 
