@@ -167,7 +167,7 @@ get "/" => "root#index"
 
 * Rails 4.0 has removed ActionDispatch::BestStandardsSupport middleware, <!DOCTYPE html> already triggers standards mode per http://msdn.microsoft.com/en-us/library/jj676915(v=vs.85).aspx and ChromeFrame header has been moved to config.action_dispatch.default_headers.
 
-* ↑これ、よく分からないです
+* Rails 4.0 では、ActionDispatch::BestStandardsSupport ミドルウェアが削除され、http://msdn.microsoft.com/en-us/library/jj676915(v=vs.85).aspx によると <!DOCTYPE html> が記述されているだけで標準モードになるので、ChromeFrame 用のヘッダは config.action_dispatch.default_headers に移動されました。
 
 アプリケーションのコードから、ミドルウェアへの参照をすべて削除するのも忘れてはいけません。例:
 
